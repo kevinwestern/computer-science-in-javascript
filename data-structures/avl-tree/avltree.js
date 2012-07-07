@@ -22,13 +22,24 @@ AVLTree.prototype = {
 		else if (what < node.value) {
 			node.left = this._insert(what, node.left);
 			if (this._nodeHeight(node.left) - this._nodeHeight(node.right) > 1) {
-				if (node.left.left) {
+				if (node.left.left.height) {
+					node = this.rotateRight(node);
+				} else {
+					node.left = this.rotateLeft(node.left);
 					node = this.rotateRight(node);
 				}
-			}
+			}			
 		}
 		else if (what > node.value) {
 			node.right = this._insert(what, node.right);
+			if (this._nodeHeight(node.right) - this._nodeHeight(node.left) > 1) {;
+				if (node.right.right.height) {
+					node = this.rotateLeft(node);
+				} else {
+					node.right = this.rotateRight(node.right);
+					node = this.rotateLeft(node);
+				}
+			}
 		}
 
 		node.height = Math.max(this._nodeHeight(node.left), this._nodeHeight(node.right)) + 1;
@@ -61,10 +72,12 @@ AVLTree.prototype = {
 			left: {
 				value: node.value,
 				left: node.left,
-				right: node.right.left
+				right: node.right.left,
+				height: Math.max(this._nodeHeight(node.left), this._nodeHeight(node.right.left)) + 1
 			},
 			right: node.right.right
 		};
+		node.height = Math.max(this._nodeHeight(node.left), this._nodeHeight(node.right)) + 1;
 
 		return node;
 	},

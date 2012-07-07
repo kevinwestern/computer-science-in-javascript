@@ -138,10 +138,31 @@ describe('inserting', function () {
 		assert.equal(tree.getRoot().left.height, 0);
 	});
 
-	it ('should rotate right when this insertion causes a leftleft scenario', function () {
+	it ('should rotate right when the insertion causes a leftleft scenario', function () {
 		var afterBalance = new AVLTree();
-		afterBalance.insert(6).insert(10).insert(7).insert(11).insert(4).insert(3).insert(5);
 		tree.insert(10).insert(11).insert(6).insert(7).insert(4).insert(5).insert(3);
+		afterBalance.insert(6).insert(4).insert(10).insert(3).insert(5).insert(7).insert(11);
+		assert.deepEqual(tree.getRoot(), afterBalance.getRoot());
+	});
+
+	it ('should rotate left when the insertion causes a rightright scenario', function () {
+		var afterBalance = new AVLTree();
+		tree.insert(6).insert(3).insert(10).insert(7).insert(12).insert(11).insert(13);
+		afterBalance.insert(10).insert(6).insert(12).insert(3).insert(7).insert(11).insert(13);
+		assert.deepEqual(tree.getRoot(), afterBalance.getRoot());
+	});
+
+	it ('should rotate left then right when the insertion causes a leftright scenario', function () {
+		var afterBalance = new AVLTree();		
+		tree.insert(10).insert(5).insert(11).insert(3).insert(7).insert(6).insert(8);
+		afterBalance.insert(7).insert(5).insert(10).insert(3).insert(6).insert(8).insert(11);		
+		assert.deepEqual(tree.getRoot(), afterBalance.getRoot());
+	});
+
+	it ('should rotate right then left when the insertion causes a rightleft scenario', function () {
+		var afterBalance = new AVLTree();
+		tree.insert(10).insert(7).insert(15).insert(12).insert(18).insert(11).insert(13);
+		afterBalance.insert(12).insert(10).insert(15).insert(7).insert(11).insert(13).insert(18);
 		assert.deepEqual(tree.getRoot(), afterBalance.getRoot());
 	});
 });
