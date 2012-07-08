@@ -5,39 +5,39 @@ var AVLTree = require('../avltree.js').AVLTree,
 	leftright = {},
 	rightleft = {};
 
-describe('result after rotateRight', function () {
+describe('result after _rotateRight', function () {
 	leftleft = {
-		value: 5,
+		value: 10,
 		left: {
-			value: 4,
+			value: 6,
 			right: {
-				value: 'D',
+				value: 7,
 				left: null,
 				right: null
 			},
 			left: {
-				value: 3,
+				value: 4,
 				left: {
-					value: 'B',
+					value: 3,
 					left: null,
 					right: null
 				},
 				right: {
-					value: 'C',
+					value: 5,
 					left: null,
 					right: null
 				}
 			}
 		},
 		right: {
-			value: 'A',
+			value: 11,
 			left: null,
 			right: null
 		}
 	};
 
 	var result = {};
-	result = AVLTree.prototype.rotateRight(leftleft);
+	result = AVLTree.prototype._rotateRight(leftleft);
 
 	it("should have a value of leftleft's left child value", function () {
 		assert.equal(result.value, leftleft.left.value);
@@ -54,32 +54,43 @@ describe('result after rotateRight', function () {
 	it("should have a left child that is equal to leftleft's left's left child", function () {
 		assert.deepEqual(result.left, leftleft.left.left);
 	});
+
+	describe('all descending', function () {
+		var tree = new AVLTree(),
+			balanced = new AVLTree();
+		tree.insert(10).insert(9).insert(8).insert(7);
+		balanced.insert(9).insert(8).insert(10).insert(7);
+
+		it('should work when insertions are in a sorted order', function () {
+			assert.deepEqual(tree.getRoot(), balanced.getRoot());
+		});
+	});
 });
 
-describe('result after rotateLeft', function () {
+describe('result after _rotateLeft', function () {
 	rightright = {
-		value: 5,
+		value: 10,
 		left: {
-			value: 'A',
+			value: 7,
 			left: null,
 			right: null
 		},
 		right: {
-			value: 6,
+			value: 12,
 			left: {
-				value: 'B',
+				value: 11,
 				left: null,
 				right: null
 			},
 			right: {
-				value: 7,
+				value: 15,
 				left: {
-					value: 'C',
+					value: 13,
 					left: null,
 					right: null
 				},
 				right: {
-					value: 'D',
+					value: 18,
 					left: null,
 					right: null
 				}
@@ -88,7 +99,7 @@ describe('result after rotateLeft', function () {
 	};
 
 	var result = {};
-	result = AVLTree.prototype.rotateLeft(rightright);
+	result = AVLTree.prototype._rotateLeft(rightright);
 
 	it("should have a value of rightright's right node", function () {
 		assert.equal(result.value, rightright.right.value);
@@ -117,7 +128,7 @@ describe('inserting', function () {
 	describe('when tree is empty', function () {
 		it('should assign the value as the root with left and right children null', function () {
 			tree.insert(5);
-			assert.deepEqual(tree.getRoot(), {value: 5, left: null, right: null, height: 0});
+			assert.deepEqual(tree.getRoot(), {value: 5, left: {}, right: {}, height: 0});
 		});
 	});
 
@@ -143,6 +154,12 @@ describe('inserting', function () {
 		tree.insert(10).insert(11).insert(6).insert(7).insert(4).insert(5).insert(3);
 		afterBalance.insert(6).insert(4).insert(10).insert(3).insert(5).insert(7).insert(11);
 		assert.deepEqual(tree.getRoot(), afterBalance.getRoot());
+
+		tree = new AVLTree();
+		afterBalance = new AVLTree();
+		tree.insert(15).insert(12).insert(7);
+		afterBalance.insert(12).insert(7).insert(15);
+		assert.deepEqual(tree.getRoot(), afterBalance.getRoot());
 	});
 
 	it ('should rotate left when the insertion causes a rightright scenario', function () {
@@ -152,10 +169,10 @@ describe('inserting', function () {
 		assert.deepEqual(tree.getRoot(), afterBalance.getRoot());
 	});
 
-	it ('should rotate left then right when the insertion causes a leftright scenario', function () {
-		var afterBalance = new AVLTree();		
+	it ('should rotate left then right when the insertion causes a left-right scenario', function () {
+		var afterBalance = new AVLTree();
 		tree.insert(10).insert(5).insert(11).insert(3).insert(7).insert(6).insert(8);
-		afterBalance.insert(7).insert(5).insert(10).insert(3).insert(6).insert(8).insert(11);		
+		afterBalance.insert(7).insert(5).insert(10).insert(3).insert(6).insert(8).insert(11);
 		assert.deepEqual(tree.getRoot(), afterBalance.getRoot());
 	});
 
@@ -164,5 +181,45 @@ describe('inserting', function () {
 		tree.insert(10).insert(7).insert(15).insert(12).insert(18).insert(11).insert(13);
 		afterBalance.insert(12).insert(10).insert(15).insert(7).insert(11).insert(13).insert(18);
 		assert.deepEqual(tree.getRoot(), afterBalance.getRoot());
+	});
+});
+
+
+describe('find', function () {
+	var tree = new AVLTree();
+	tree.insert(15).insert(12).insert(7).insert(22).insert(25).insert(100);
+
+	it('should return the element if it is found', function () {
+		assert.equal(tree.find(22), 22);
+	});
+
+	it('should return null if the element is not found', function () {
+		assert.equal(tree.find(42), null);
+	});
+});
+
+describe('traversal', function () {
+	var tree = new AVLTree();
+	tree.insert(10).insert(5).insert(11).insert(3).insert(7).insert(6).insert(8);
+
+	// left, node, right
+	describe('inOrder', function () {
+		it('should return the node values in ascending order', function () {
+			assert.deepEqual(tree.inOrder(), [3,5,6,7,8,10,11]);
+		});
+	});
+
+	// node, left, right
+	describe('preOrder', function () {
+		it('should return the node values in pre-order form', function () {			
+			assert.deepEqual(tree.preOrder(), [7,5,3,6,10,8,11]);
+		});
+	});
+
+	// left, right, node
+	describe('postOrder', function () {
+		it('should return the node values in post-order form', function () {
+			assert.deepEqual(tree.postOrder(), [3,6,5,8,11,10,7]);
+		});
 	});
 });
